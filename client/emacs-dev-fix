@@ -1,0 +1,2 @@
+#!/bin/bash
+cp fixed-ignored-files.js node_modules/react-dev-utils/ignoredFiles.js
