@@ -76,6 +76,9 @@ func userRoutes(router chi.Router) {
 		user.Post("/", func(w http.ResponseWriter, r *http.Request) {
 			handleCreate(w, r, new(db.User))
 		})
+		user.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			handleSearch(w, r, new(db.User))
+		})
 		user.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			handleGet(w, r, new(db.User))
 		})

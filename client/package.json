@@ -1,6 +1,7 @@
 {
   "name": "cosmoshipcamp",
   "license": "MIT",
+  "proxy": "http://localhost:3001",
   "version": "0.1.0",
   "dependencies": {
     "prop-types": "^15.7.2",

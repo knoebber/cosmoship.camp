@@ -8,17 +8,23 @@ import {
 import Signup from './Signup';
 import Home from './Home';
 import Login from './Login';
+import Users from './Users';
 
 export default function Nav() {
   return (
     <Router>
       <nav>
         <Link to="/">Home</Link>
-        <Link to="/signup">Signup</Link>
         <Link to="/login">Login</Link>
+        <Link to="/signup">Signup</Link>
+        <Link to="/users">Users</Link>
       </nav>
       <main>
         <Switch>
+          <Route
+            component={Users}
+            path="/users"
+          />
           <Route
             component={Signup}
             path="/signup"

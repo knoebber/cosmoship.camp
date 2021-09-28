@@ -1,17 +1,6 @@
-:root {
-    --border-color: grey;
-    --highlight-color: hotpink;
-}
-
 html {
     box-sizing: border-box;
-    font-size: 14px;
-    font-family: Roboto,Helvetica,Arial,sans-serif;
-}
-
-body {
-    overflow-y: scroll;
-    overflow-x: auto;
+    font-size: 13px;
 }
 
 *,
@@ -20,98 +9,23 @@ body {
     box-sizing: inherit;
 }
 
-nav a {
-    margin-left: 1rem;
-}
-
-h1 {
-    color: var(--highlight-color);
-}
-
-.calendar-controls {
+nav {
     display: flex;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
     justify-content: space-between;
+    height: 50px;
 }
 
-.calendar-controls h2 {
-    margin: 0;
-}
-
-.calendar-controls a {
+input {
     margin-left: 1rem;
-    margin-right: 1rem;
 }
 
-.day-name-grid {
-    display: grid;
-    grid-template-rows: 40px;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.day-name {
-    margin: auto;
-}
-
-.month-grid {
-    display: grid;
-    height: 100%;
-    grid-template-columns: repeat(7, 1fr);
-    min-height: 70vh;
-
-    /* Border is finished in .day */
-    border-bottom: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-}
-
-.month-day {
-    border-top: 1px solid var(--border-color);
-    border-left: 1px solid var(--border-color);
-    min-height: 80px;
-    text-align: center;
-}
-
-.day-hour-grid {
-    display: grid;
-    grid-template-columns: 65px 8px 1fr;
-    grid-template-rows: repeat(24, 50px);
-}
-
-.day-hour-text {
-    grid-column: 1;
-    text-align: right;
-}
-
-.day-hour-separator {
-    border-right: 1px solid var(--border-color);
-    grid-column: 2;
-}
-
-.day-hour-area {
-    padding-left: 10px;
-    margin-left: -10px;
-    border-bottom: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-}
-
-.day-hour-area.last-item {
-    border-bottom: unset;
-}
-
-.day-hour-text span {
-    position: relative;
-    top: 36px;
-    margin-right: 10px;
-}
-
-.week-day-grid {
-    display: grid;
-    grid-template-columns: 65px 8px repeat(7, 1fr);
-    grid-template-rows: 40px repeat(24, 50px);
-    text-align: center;
-}
-
-.today {
-    color: var(--highlight-color);
+#notification {
+    background-color: black;
+    border: 3px solid #4a4a4a;
+    border-radius: 4px;
+    color: white;
+    padding: 1rem;
+    position: absolute;
+    right: 30px;
+    top: 70px;
 }

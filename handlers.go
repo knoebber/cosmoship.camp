@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -24,10 +25,13 @@ type creator interface {
 	Create() (interface{}, error)
 }
 
+type searcher interface {
+	Search(url.Values) (interface{}, error)
+}
+
 type body struct {
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
-	Total   int         `json:"total"`
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request, g getter) {
@@ -56,6 +60,19 @@ func handleCreate(w http.ResponseWriter, r *http.Request, c creator) {
 	}
 
 	if data, err := c.Create(); err != nil {
+		setError(w, err)
+	} else {
+		setBody(w, body{Data: data})
+	}
+}
+
+func handleSearch(w http.ResponseWriter, r *http.Request, s searcher) {
+	if err := r.ParseForm(); err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	if data, err := s.Search(r.Form); err != nil {
 		setError(w, err)
 	} else {
 		setBody(w, body{Data: data})
