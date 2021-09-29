@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './modern-normalize.css';
 import './style.css';
 import Nav from './components/Nav';
 import Notification from './components/Notification';

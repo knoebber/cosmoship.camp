@@ -14,6 +14,7 @@ export default function Nav() {
   return (
     <Router>
       <nav>
+        <h1>Cosmo&apos;s Camp</h1>
         <Link to="/">Home</Link>
         <Link to="/login">Login</Link>
         <Link to="/signup">Signup</Link>

@@ -1,29 +1,77 @@
-html {
-    box-sizing: border-box;
-    font-size: 13px;
+:root {
+    /* https://www.happyhues.co/palettes/10 */
+    --background: #004643;
+    --button-text: #001e1d;
+    --headline: #fffffe;
+    --highlight: #f9bc60;
+    --main: #e8e4e6;
+    --paragraph: #abd1c6;
+    --secondary: #abd1c6;
+    --tertiary: #e16162;
 }
 
-*,
-*:before,
-*:after {
-    box-sizing: inherit;
+main, form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+a, label, h1, h2, h3, h4, h5 {
+    color: var(--headline);
+}
+
+body {
+    background: var(--background);
 }
 
 nav {
+    align-items: center;
     display: flex;
-    justify-content: space-between;
     height: 50px;
+    justify-content: space-around;
+}
+
+main {
+    margin: 1rem;
+}
+
+label {
+    width: 100%;
+    margin-bottom: 1rem;
 }
 
 input {
+    float: right;
     margin-left: 1rem;
 }
 
+th, td {
+    border: solid 1px var(--main);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    color: var(--headline);
+    text-align: center;
+}
+
+td {
+    color: var(--paragraph);
+    text-align: center;
+}
+
+button[type="submit"] {
+    align-self: flex-start;
+}
+
 #notification {
-    background-color: black;
-    border: 3px solid #4a4a4a;
+    background-color: var(--highlight);
     border-radius: 4px;
-    color: white;
+    color: var(--button-text);
     padding: 1rem;
     position: absolute;
     right: 30px;

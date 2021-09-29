@@ -14,11 +14,15 @@ export default function Signup() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    let strippedPhone = user.phone.replaceAll(/\D/g, '');
+    if (strippedPhone.length === 10) strippedPhone = `1${strippedPhone}`;
+    if (strippedPhone) strippedPhone = `+${strippedPhone}`;
+
     const result = await fetch('/api/v1/users', {
       method: 'POST',
       body: JSON.stringify({
         ...user,
-        phone: user.phone.replaceAll(/\D/g, ''),
+        phone: strippedPhone,
       }),
     });
     if (result) {
@@ -32,7 +36,7 @@ export default function Signup() {
 
   return (
     <>
-      <h1>Signup</h1>
+      <h2>Signup</h2>
       <form onSubmit={onSubmit}>
         <label>
           Email:
