@@ -3,18 +3,18 @@ package db
 import (
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/knoebber/cosmoship.camp/usererror"
 	"gorm.io/gorm"
 )
 
-// TODO - make fields case insensitive.
 type User struct {
 	ID        int       `gorm:"primaryKey;autoIncrement" json:"id"`
-	Email     string    `gorm:"unique;not null" json:"email" validate:"required,email"`
-	Name      string    `json:"name"`
-	Phone     string    `json:"phone" validate:"e164"`
+	Email     string    `gorm:"size:255;unique;not null" json:"email" validate:"email"`
+	Name      string    `gorm:"size:255" json:"name"`
+	Phone     string    `gorm:"size:64" json:"phone" validate:"omitempty,e164"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -22,6 +22,7 @@ type User struct {
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 	var count int64
 
+	u.Email = strings.ToLower(u.Email)
 	if tx.Model(u).Where("email = ?", u.Email).Count(&count); count > 0 {
 		return usererror.New(fmt.Sprintf("%q is already registered", u.Email))
 	}
