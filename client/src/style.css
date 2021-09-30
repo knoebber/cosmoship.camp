@@ -10,6 +10,13 @@
     --tertiary: #e16162;
 }
 
+html {
+    /* Create a margin the size of the scroll bar.
+     * Prevents layout from jumping between pages with and without vertical scroll bar */
+    margin-left: calc(100vw - 100%);
+    overflow-y: scroll;
+}
+
 main, form {
     display: flex;
     align-items: center;
@@ -43,6 +50,7 @@ label {
 input {
     float: right;
     margin-left: 1rem;
+    width: 300px;
 }
 
 th, td {
@@ -69,11 +77,20 @@ button[type="submit"] {
 }
 
 #notification {
-    background-color: var(--highlight);
+    background-color: var(--main);
     border-radius: 4px;
     color: var(--button-text);
     padding: 1rem;
     position: absolute;
     right: 30px;
     top: 70px;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--paragraph);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
 }

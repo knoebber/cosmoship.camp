@@ -23,7 +23,7 @@ export function useFetch() {
 
   return useCallback(async (url, options) => {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`/api/v1/${url}`, {
         ...options,
         signal: abortControllerRef.current.signal,
         headers: { 'Content-Type': 'application/json' },

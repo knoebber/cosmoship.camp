@@ -26,7 +26,7 @@ func setupRouter() *chi.Mux {
 
 	router.Route("/api/v1", func(api chi.Router) {
 		authRoutes(api)
-		userRoutes(api)
+		memberRoutes(api)
 	})
 	return router
 }
@@ -71,16 +71,19 @@ func authRoutes(router chi.Router) {
 	})
 }
 
-func userRoutes(router chi.Router) {
-	router.Route("/users", func(user chi.Router) {
+func memberRoutes(router chi.Router) {
+	router.Route("/members", func(user chi.Router) {
 		user.Post("/", func(w http.ResponseWriter, r *http.Request) {
-			handleCreate(w, r, new(db.User))
+			handleCreate(w, r, new(db.Member))
 		})
 		user.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			handleSearch(w, r, new(db.User))
+			handleSearch(w, r, new(db.Member))
 		})
 		user.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			handleGet(w, r, new(db.User))
+			handleGet(w, r, new(db.Member))
+		})
+		user.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
+			handleDelete(w, r, new(db.Member))
 		})
 	})
 }

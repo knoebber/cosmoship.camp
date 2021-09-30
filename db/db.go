@@ -4,6 +4,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,12 +15,16 @@ var Conn *gorm.DB
 
 // Start connects to a postgres database.
 func Start(connString string) (err error) {
-	Conn, err = gorm.Open(postgres.Open(connString), &gorm.Config{})
+	Conn, err = gorm.Open(postgres.Open(connString), &gorm.Config{
+		NowFunc: func() time.Time { return time.Now().UTC() },
+	})
 	if err != nil {
 		return fmt.Errorf("failed to start to database: %w", err)
 	}
 
-	if err = Conn.AutoMigrate(User{}); err != nil {
+	if err = Conn.AutoMigrate(
+		Member{},
+	); err != nil {
 		return fmt.Errorf("failed to migrate: %w", err)
 	}
 

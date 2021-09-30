@@ -21,8 +21,12 @@ type getter interface {
 	Get(id int) error
 }
 
-type creator interface {
+type creater interface {
 	Create() (interface{}, error)
+}
+
+type deleter interface {
+	Delete(id int) error
 }
 
 type searcher interface {
@@ -48,7 +52,7 @@ func handleGet(w http.ResponseWriter, r *http.Request, g getter) {
 	}
 }
 
-func handleCreate(w http.ResponseWriter, r *http.Request, c creator) {
+func handleCreate(w http.ResponseWriter, r *http.Request, c creater) {
 	if err := json.NewDecoder(r.Body).Decode(c); err != nil {
 		badRequest(w, err)
 		return
@@ -63,6 +67,20 @@ func handleCreate(w http.ResponseWriter, r *http.Request, c creator) {
 		setError(w, err)
 	} else {
 		setBody(w, body{Data: data})
+	}
+}
+
+func handleDelete(w http.ResponseWriter, r *http.Request, d deleter) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	if err = d.Delete(id); err != nil {
+		setError(w, err)
+	} else {
+		setBody(w, body{Data: true})
 	}
 }
 

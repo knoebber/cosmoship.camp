@@ -5,10 +5,9 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import Signup from './Signup';
 import Home from './Home';
 import Login from './Login';
-import Users from './Users';
+import Members from './Members';
 
 export default function Nav() {
   return (
@@ -17,18 +16,13 @@ export default function Nav() {
         <h1>Cosmo&apos;s Camp</h1>
         <Link to="/">Home</Link>
         <Link to="/login">Login</Link>
-        <Link to="/signup">Signup</Link>
-        <Link to="/users">Users</Link>
+        <Link to="/members">Members</Link>
       </nav>
       <main>
         <Switch>
           <Route
-            component={Users}
-            path="/users"
-          />
-          <Route
-            component={Signup}
-            path="/signup"
+            component={Members}
+            path="/members"
           />
           <Route
             component={Login}
