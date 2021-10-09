@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useFetch, useNotification } from './hooks';
+import { useFetch, useNotification } from '../hooks';
 
 // Precondition: phone is in e164 format.
 // Input: '+17076412600'

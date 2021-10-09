@@ -5,9 +5,9 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import Home from './Home';
-import Login from './Login';
-import Members from './Members';
+import Home from './home';
+import Login from './auth/Login';
+import Members from './members';
 
 export default function Nav() {
   return (
