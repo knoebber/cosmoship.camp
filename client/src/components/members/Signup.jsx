@@ -21,7 +21,7 @@ export default function Signup(props) {
     if (strippedPhone.length === 10) strippedPhone = `1${strippedPhone}`;
     if (strippedPhone) strippedPhone = `+${strippedPhone}`;
 
-    const result = await fetch('members', {
+    const result = await fetch('/members', {
       method: 'POST',
       body: JSON.stringify({
         ...member,

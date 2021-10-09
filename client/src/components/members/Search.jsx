@@ -31,13 +31,13 @@ export default function Search(props) {
 
   useEffect(() => {
     (async () => {
-      const result = await fetch('members');
+      const result = await fetch('/members');
       if (result) setMembers(result);
     })();
   }, [fetch, updateCount]);
 
   async function deleteMember(id) {
-    const result = await fetch(`members/${id}`, { method: 'DELETE' });
+    const result = await fetch(`/members/${id}`, { method: 'DELETE' });
     if (result) {
       setUpdateCount(updateCount + 1);
       notify('deleted member');
