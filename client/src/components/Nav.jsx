@@ -8,6 +8,7 @@ import {
 import Home from './home';
 import Login from './auth/Login';
 import Members from './members';
+import Password from './auth/Password';
 
 export default function Nav() {
   return (
@@ -27,6 +28,10 @@ export default function Nav() {
           <Route
             component={Login}
             path="/login"
+          />
+          <Route
+            component={Password}
+            path="/password"
           />
           <Route
             component={Home}

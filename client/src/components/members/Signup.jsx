@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFetch, useNotification } from '../hooks';
 
@@ -6,14 +6,26 @@ const emptyMember = {
   email: '',
   name: '',
   phone: '',
+  source: '',
 };
 
 export default function Signup(props) {
+  const [sources, setSources] = useState([]);
   const [member, setMember] = useState(emptyMember);
   const fetch = useFetch();
   const setNotification = useNotification();
 
   const { afterCreate } = props;
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetch('/members/sources');
+      if (result && result.length) {
+        setSources(result);
+        setMember((m) => ({ ...m, source: result[0] }));
+      }
+    })();
+  }, [fetch]);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -66,6 +78,17 @@ export default function Signup(props) {
           onChange={onChange}
           value={member.phone}
         />
+      </label>
+      <label>
+        Source:
+        <select
+          style={{ float: 'right' }}
+          name="source"
+          value={member.source}
+          onChange={onChange}
+        >
+          {sources.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
       </label>
       <button type="submit">Submit</button>
     </form>

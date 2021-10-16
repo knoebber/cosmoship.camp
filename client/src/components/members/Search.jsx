@@ -59,6 +59,7 @@ export default function Search(props) {
           <th>Email</th>
           <th>Name</th>
           <th>Phone</th>
+          <th>Source</th>
           <th>Created</th>
           <th>&nbsp;</th>
         </tr>
@@ -66,17 +67,18 @@ export default function Search(props) {
       <tbody>
         {members
           .filter(filterRows)
-          .map((u) => (
-            <tr key={u.id}>
-              <td>{u.email}</td>
-              <td>{u.name}</td>
-              <td>{formatPhone(u.phone)}</td>
-              <td>{new Date(u.createdAt).toLocaleString()}</td>
+          .map((m) => (
+            <tr key={m.id}>
+              <td>{m.email}</td>
+              <td>{m.name}</td>
+              <td>{formatPhone(m.phone)}</td>
+              <td>{m.source}</td>
+              <td>{new Date(m.createdAt).toLocaleString()}</td>
               <td>
                 <button
                   className="link-button"
                   type="button"
-                  onClick={() => deleteMember(u.id)}
+                  onClick={() => deleteMember(m.id)}
                 >
                   x
                 </button>

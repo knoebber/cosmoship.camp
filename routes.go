@@ -9,13 +9,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/knoebber/cosmoship.camp/db"
+	"github.com/knoebber/cosmoship.camp/config"
 )
+
+const apiPath = "/api/v1"
 
 //go:embed client/build
 var content embed.FS
 
-func setupRouter() *chi.Mux {
+func setupRouter(c *config.ServerConfiguration) *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
@@ -23,11 +25,9 @@ func setupRouter() *chi.Mux {
 	router.Use(middleware.Logger)
 
 	staticRoutes(router)
+	router.Mount(apiPath+"/members", memberResource{}.Routes())
+	router.Mount(apiPath+"/auth", authResource{}.Routes())
 
-	router.Route("/api/v1", func(api chi.Router) {
-		authRoutes(api)
-		memberRoutes(api)
-	})
 	return router
 }
 
@@ -60,30 +60,5 @@ func staticRoutes(router *chi.Mux) {
 		} else {
 			w.Write(html)
 		}
-	})
-}
-
-func authRoutes(router chi.Router) {
-	router.Route("/auth", func(auth chi.Router) {
-		auth.Get("/login", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("logged in"))
-		})
-	})
-}
-
-func memberRoutes(router chi.Router) {
-	router.Route("/members", func(user chi.Router) {
-		user.Post("/", func(w http.ResponseWriter, r *http.Request) {
-			handleCreate(w, r, new(db.Member))
-		})
-		user.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			handleSearch(w, r, new(db.Member))
-		})
-		user.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			handleGet(w, r, new(db.Member))
-		})
-		user.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			handleDelete(w, r, new(db.Member))
-		})
 	})
 }

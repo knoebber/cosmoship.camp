@@ -97,6 +97,11 @@ func handleSearch(w http.ResponseWriter, r *http.Request, s searcher) {
 	}
 }
 
+func handleLoginError(w http.ResponseWriter, email string, err error) {
+	log.Printf("failed login attempt for %q: %s", email, err)
+	setError(w, usererror.New("email or password is incorrect"))
+}
+
 func setError(w http.ResponseWriter, err error) {
 	var uError *usererror.Error
 
@@ -131,12 +136,22 @@ func setBody(w http.ResponseWriter, b body) {
 	}
 }
 
+func unauthorized(w http.ResponseWriter, err error) {
+	log.Printf("unauthorized: %s", err)
+	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+
+}
+func permissionDenied(w http.ResponseWriter, err error) {
+	log.Printf("permission denied: %s", err)
+	http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+}
+
 func badRequest(w http.ResponseWriter, err error) {
 	log.Printf("bad request: %s", err)
-	http.Error(w, "bad request", http.StatusBadRequest)
+	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 }
 
 func internalError(w http.ResponseWriter, err error) {
 	log.Printf("internal error: %s", err)
-	http.Error(w, "internal error", http.StatusInternalServerError)
+	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
