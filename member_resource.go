@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/knoebber/cosmoship.camp/models"
@@ -42,6 +40,10 @@ func (mr memberResource) search(w http.ResponseWriter, r *http.Request) {
 	handleSearch(w, r, new(models.Member))
 }
 
+func (mr memberResource) updatePassword(w http.ResponseWriter, r *http.Request) {
+	handlePasswordUpdate(w, r, new(models.Member))
+}
+
 func (mr memberResource) sources(w http.ResponseWriter, r *http.Request) {
 	setBody(w, body{
 		Data: []models.MemberSource{
@@ -50,26 +52,4 @@ func (mr memberResource) sources(w http.ResponseWriter, r *http.Request) {
 			models.MemberSourceInPerson,
 		},
 	})
-}
-
-func (mr memberResource) updatePassword(w http.ResponseWriter, r *http.Request) {
-	var request struct {
-		Password string `json:"password"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		badRequest(w, err)
-		return
-	}
-
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		badRequest(w, err)
-		return
-	}
-
-	if err := models.UpdateMemberPassword(id, request.Password); err != nil {
-		setError(w, err)
-	} else {
-		setBody(w, body{Message: "updated password"})
-	}
 }

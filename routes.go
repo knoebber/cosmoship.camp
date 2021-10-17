@@ -25,8 +25,10 @@ func setupRouter(c *config.ServerConfiguration) *chi.Mux {
 	router.Use(middleware.Logger)
 
 	staticRoutes(router)
-	router.Mount(apiPath+"/members", memberResource{}.Routes())
+
+	router.Mount(apiPath+"/admin", adminResource{}.Routes())
 	router.Mount(apiPath+"/auth", authResource{}.Routes())
+	router.Mount(apiPath+"/members", memberResource{}.Routes())
 
 	return router
 }

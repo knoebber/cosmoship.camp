@@ -20,59 +20,56 @@ type authResource struct{ secure bool }
 
 func (ar authResource) Routes() chi.Router {
 	r := chi.NewRouter()
-	r.Post("/login", ar.login())
+	r.Post("/login", ar.login)
 	r.Get("/session", ar.getSession)
 	return r
 }
 
-func (ar authResource) login() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var request struct {
-			Email    string `json:"email"`
-			Password string `json:"password"`
-		}
-
-		// Randomization the response time.
-		time.Sleep(time.Millisecond * time.Duration(rand.Intn(3000)))
-
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			badRequest(w, err)
-			return
-		}
-
-		session, err := models.Login(request.Email, request.Password, r.RemoteAddr)
-		if err != nil {
-			handleLoginError(w, request.Email, err)
-			return
-		}
-
-		http.SetCookie(w, &http.Cookie{
-			HttpOnly: true,
-			MaxAge:   models.SessionDurationSeconds,
-			Name:     sessionCookie,
-			SameSite: http.SameSiteStrictMode,
-			Secure:   ar.secure,
-			Value:    session,
-		})
-		setBody(w, body{Message: "logged in"})
+func (ar authResource) login(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
+
+	// Randomization the response time.
+	time.Sleep(time.Millisecond * time.Duration(rand.Intn(3000)))
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	session, err := models.Login(request.Email, request.Password, r.RemoteAddr)
+	if err != nil {
+		handleLoginError(w, request.Email, err)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		HttpOnly: true,
+		Name:     sessionCookie,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   ar.secure,
+		Value:    session,
+	})
+	setBody(w, body{Message: "logged in"})
 }
 
 func (ar authResource) getSession(w http.ResponseWriter, r *http.Request) {
-	var g getter
+	var u models.User
 	id, isAdmin := checkSession(w, r)
 	if id < 1 {
 		return
 	}
 	if isAdmin {
-		g = new(models.Admin)
+		u = new(models.Admin)
 	} else {
-		g = new(models.Member)
+		u = new(models.Member)
 	}
-	if err := g.Get(id); err != nil {
+	if err := u.Get(id); err != nil {
 		setError(w, err)
 	} else {
-		setBody(w, body{Data: g})
+		setBody(w, body{Data: u})
 	}
 }
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/knoebber/cosmoship.camp/db"
@@ -16,6 +17,10 @@ type Admin struct {
 	UpdatedAt  time.Time `gorm:"type:timestamp;not null" json:"updatedAt"`
 
 	Password *Password `json:"-"`
+}
+
+func (a *Admin) passwordID() *int {
+	return a.PasswordID
 }
 
 func (a *Admin) String() string {
@@ -37,4 +42,30 @@ func (a *Admin) Get(id int) error {
 	}
 
 	return nil
+}
+
+func (a *Admin) Create() (interface{}, error) {
+	if err := db.Conn.Create(a).Error; err != nil {
+		return nil, fmt.Errorf("creating admin %q: %w", a.Email, err)
+	}
+
+	return a, nil
+}
+
+func (a *Admin) Delete(id int) error {
+	if err := db.Conn.Delete(a, id).Error; err != nil {
+		return fmt.Errorf("deleting admin %d: %w", id, err)
+	}
+
+	return nil
+}
+
+func (*Admin) Search(values url.Values) (interface{}, error) {
+	var result []Admin
+
+	if err := db.Conn.Order("created_at desc").Find(&result).Error; err != nil {
+		return nil, fmt.Errorf("searching admins: %w", err)
+	}
+
+	return result, nil
 }

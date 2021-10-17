@@ -6,39 +6,23 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"github.com/knoebber/cosmoship.camp/db"
+	"github.com/knoebber/cosmoship.camp/models"
 	"github.com/knoebber/cosmoship.camp/usererror"
 )
 
 var validate *validator.Validate
-
-type getter interface {
-	Get(id int) error
-}
-
-type creater interface {
-	Create() (interface{}, error)
-}
-
-type deleter interface {
-	Delete(id int) error
-}
-
-type searcher interface {
-	Search(url.Values) (interface{}, error)
-}
 
 type body struct {
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }
 
-func handleGet(w http.ResponseWriter, r *http.Request, g getter) {
+func handleGet(w http.ResponseWriter, r *http.Request, g models.Getter) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		badRequest(w, err)
@@ -52,7 +36,7 @@ func handleGet(w http.ResponseWriter, r *http.Request, g getter) {
 	}
 }
 
-func handleCreate(w http.ResponseWriter, r *http.Request, c creater) {
+func handleCreate(w http.ResponseWriter, r *http.Request, c models.Creater) {
 	if err := json.NewDecoder(r.Body).Decode(c); err != nil {
 		badRequest(w, err)
 		return
@@ -70,7 +54,7 @@ func handleCreate(w http.ResponseWriter, r *http.Request, c creater) {
 	}
 }
 
-func handleDelete(w http.ResponseWriter, r *http.Request, d deleter) {
+func handleDelete(w http.ResponseWriter, r *http.Request, d models.Deleter) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		badRequest(w, err)
@@ -84,7 +68,7 @@ func handleDelete(w http.ResponseWriter, r *http.Request, d deleter) {
 	}
 }
 
-func handleSearch(w http.ResponseWriter, r *http.Request, s searcher) {
+func handleSearch(w http.ResponseWriter, r *http.Request, s models.Searcher) {
 	if err := r.ParseForm(); err != nil {
 		badRequest(w, err)
 		return
@@ -94,6 +78,28 @@ func handleSearch(w http.ResponseWriter, r *http.Request, s searcher) {
 		setError(w, err)
 	} else {
 		setBody(w, body{Data: data})
+	}
+}
+
+func handlePasswordUpdate(w http.ResponseWriter, r *http.Request, u models.User) {
+	var request struct {
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	if err := models.UpdatePassword(u, id, request.Password); err != nil {
+		setError(w, err)
+	} else {
+		setBody(w, body{Message: "updated password"})
 	}
 }
 

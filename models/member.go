@@ -36,6 +36,10 @@ type Member struct {
 	Password *Password `json:"-"`
 }
 
+func (m *Member) passwordID() *int {
+	return m.PasswordID
+}
+
 func (m *Member) String() string {
 	return fmt.Sprintf("member %d", m.ID)
 }
@@ -84,7 +88,7 @@ func (m *Member) Delete(id int) error {
 	return nil
 }
 
-func (m *Member) Search(values url.Values) (interface{}, error) {
+func (*Member) Search(values url.Values) (interface{}, error) {
 	var result []Member
 
 	if err := db.Conn.Order("created_at desc").Find(&result).Error; err != nil {
@@ -92,37 +96,4 @@ func (m *Member) Search(values url.Values) (interface{}, error) {
 	}
 
 	return result, nil
-}
-
-func UpdateMemberPassword(memberID int, rawPassword string) error {
-	m := new(Member)
-	if err := m.Get(memberID); err != nil {
-		return err
-	}
-
-	hash, err := hashPassword(rawPassword)
-	if err != nil {
-		return fmt.Errorf("hashing password for %s: %w", m, err)
-	}
-
-	return db.Conn.Transaction(func(tx *gorm.DB) error {
-		var oldPassword *Password
-		if m.PasswordID != nil {
-			oldPassword = &Password{ID: *m.PasswordID}
-		}
-
-		newPassword := &Password{Hash: hash}
-		if err := tx.Create(newPassword).Error; err != nil {
-			return fmt.Errorf("creating %s for %s: %w", newPassword, m, err)
-		}
-		if err := tx.Model(m).Update("password_id", newPassword.ID).Error; err != nil {
-			return fmt.Errorf("updating %s to reference %s: %w", m, newPassword, err)
-		}
-		if oldPassword != nil {
-			if err := tx.Delete(oldPassword).Error; err != nil {
-				return fmt.Errorf("deleting %s for %s: %w", oldPassword, m, err)
-			}
-		}
-		return nil
-	})
 }

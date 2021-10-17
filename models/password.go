@@ -7,6 +7,7 @@ import (
 	"github.com/knoebber/cosmoship.camp/db"
 	"github.com/knoebber/cosmoship.camp/usererror"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 const minPasswordLength = 8
@@ -19,6 +20,39 @@ type Password struct {
 
 func (p *Password) String() string {
 	return fmt.Sprintf("password %d", p.ID)
+}
+
+func UpdatePassword(u User, userID int, rawPassword string) error {
+	if err := u.Get(userID); err != nil {
+		return err
+	}
+
+	hash, err := hashPassword(rawPassword)
+	if err != nil {
+		return fmt.Errorf("hashing password for %s: %w", u, err)
+	}
+
+	return db.Conn.Transaction(func(tx *gorm.DB) error {
+		var oldPassword *Password
+		oldPasswordID := u.passwordID()
+		if oldPasswordID != nil {
+			oldPassword = &Password{ID: *oldPasswordID}
+		}
+
+		newPassword := &Password{Hash: hash}
+		if err := tx.Create(newPassword).Error; err != nil {
+			return fmt.Errorf("creating %s for %s: %w", newPassword, u, err)
+		}
+		if err := tx.Model(u).Update("password_id", newPassword.ID).Error; err != nil {
+			return fmt.Errorf("updating %s to reference %s: %w", u, newPassword, err)
+		}
+		if oldPassword != nil {
+			if err := tx.Delete(oldPassword).Error; err != nil {
+				return fmt.Errorf("deleting %s for %s: %w", oldPassword, u, err)
+			}
+		}
+		return nil
+	})
 }
 
 func hashPassword(password string) ([]byte, error) {
